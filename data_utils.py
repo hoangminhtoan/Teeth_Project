@@ -3,6 +3,12 @@ import datetime
 import calendar
 import csv
 import cv2
+import numpy as np
+import skimage
+import matplotlib.pyplot as plt 
+import matplotlib.image as mpimg 
+import os 
+
 
 START_DATE = datetime.date(2015, 8, 8)
 CSV_FILE = "teeth_summary.csv"
@@ -70,6 +76,47 @@ def create_csv():
         if count % 6 == 0:
             date_time = add_month(startdate=date_time, months=1)
         
+
+def load_data(dir_name=None, img_list=None):
+    gray_imgs = []
+    color_imgs = []
+
+    if dir_name is not None:
+        for filename in sorted(os.listdir(dir_name)):
+            if '.jpg' in filename:
+                img = cv2.imread(dir_name + '/' + filename)
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                gray_img = cv2.imread(filename, 0)
+
+                color_imgs.append(img)
+                gray_imgs.append(gray_img)
+    
+    if img_list is not None:
+        for filename in img_list:
+            img = cv2.imread(filename)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            gray_img = cv2.imread(filename, 0)
+
+            color_imgs.append(img)
+            gray_imgs.append(gray_img)
+
+    return color_imgs, gray_imgs
+
+def visualize_image(imgs, img_titles, gray=False):
+    rows, cols = 3, 3
+    plt.figure(figsize=(20, 20))
+    for i, img in enumerate(imgs):
+
+        plt.add_subplot(rows, cols, i+1)
+        if gray:
+            plt.imshow(img, cmap='gray')
+        else:
+            plt.imshow(img)
+
+        plt.title(img_titles[i])
+
+    plt.show()
+
 
 if __name__ == '__main__':
     clean_data()
